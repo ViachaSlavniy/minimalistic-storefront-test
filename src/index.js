@@ -3,10 +3,30 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import {BrowserRouter} from "react-router-dom";
+import {
+    ApolloClient,
+    InMemoryCache,
+    ApolloProvider,
+    gql,
+} from "@apollo/client";
+import {store} from './redux/store';
+import {Provider} from "react-redux";
+
+const client = new ApolloClient({
+    uri: 'http://localhost:4000',
+    cache: new InMemoryCache()
+});
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+      <BrowserRouter>
+          <ApolloProvider client={client}>
+              <Provider store={store}>
+                  <App />
+              </Provider>
+          </ApolloProvider>
+      </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')
 );
