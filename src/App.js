@@ -16,6 +16,7 @@ const BlackContainer = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
+  min-height: calc(100vh - 80px);
   background-color: #393748;
   opacity: 0.22;
   display: ${props => props.active ? 'block' : 'none'};

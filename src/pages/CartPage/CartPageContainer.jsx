@@ -1,6 +1,6 @@
 import {connect} from "react-redux";
 import {CartPage} from "./CartPage";
-import {addProduct, decrement, deleteProduct, increment} from "../../redux/reducers/cartReducer";
+import {changeAttribute, decrement, deleteProduct, increment} from "../../redux/reducers/cartReducer";
 
 
 const mapStateToProps = (state) => {
@@ -16,8 +16,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         increment: (prod) => {dispatch(increment(prod))},
         decrement: (prod) => {dispatch(decrement(prod))},
-        addProduct: () => {dispatch(addProduct())},
-        deleteProduct: () => {dispatch(deleteProduct())}
+        deleteProduct: (prod) => {dispatch(deleteProduct(prod))},
+        changeAttribute: (prod, newActiveAttr) => {dispatch(changeAttribute(prod, newActiveAttr))}
     }
 }
 

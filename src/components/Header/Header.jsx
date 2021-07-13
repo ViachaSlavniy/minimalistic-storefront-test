@@ -4,7 +4,7 @@ import {Cart, Logo} from '../../assets/images'
 import {graphql} from "@apollo/client/react/hoc";
 import {Link} from "react-router-dom";
 import {GET_CURRENCIES} from "../../api/queries";
-import {Button, ColorButton, SizeButton, SmallButtonSize, SmallColorButton} from "../Common/Buttons";
+import {Button, SmallButtonSize, SmallColorButton} from "../Common/Buttons";
 
 const StyledHeader = styled.header`
   position: fixed;
@@ -234,10 +234,6 @@ const MiniCart = styled.div`
           .attributes__block + .attributes__block {
             margin-top: 10px;
           }
-
-          button {
-            margin-right: 10px;
-          }
         }
 
         .item__price {
@@ -287,6 +283,7 @@ class Header extends React.Component {
         activeCurrency: {},
     }
 
+
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps !== this.props) {
             this.setState({activeCurrency: this.props.currentCurrency})
@@ -313,6 +310,7 @@ class Header extends React.Component {
                             return getCurrencyObj(curr, 'A$')
                         case 'JPY':
                             return getCurrencyObj(curr, '¥')
+                        default: return getCurrencyObj(curr, '$')
                     }
                 })
                 this.setState({availableCurrencies})
@@ -331,9 +329,6 @@ class Header extends React.Component {
     }
     decrement = (prod) => {
         this.props.decrement(prod);
-    }
-    delete = () => {
-        console.log('deleted')
     }
     openMiniCart = () => {
         const {history, location} = this.props
@@ -410,13 +405,7 @@ class Header extends React.Component {
                             <div className="counter">
                                 <SmallButtonSize onClick={() => this.increment(product)}>+</SmallButtonSize>
                                 <p className="count">{product.count}</p>
-                                <SmallButtonSize onClick={() => {
-                                    if (product.count > 1) {
-                                        this.decrement(product)
-                                    } else {
-                                        this.delete()
-                                    }
-                                }}>-</SmallButtonSize>
+                                <SmallButtonSize onClick={() => this.decrement(product)}>-</SmallButtonSize>
                             </div>
                             <div className="gallery">
                                 <img src={product.gallery[0]} alt=""/>

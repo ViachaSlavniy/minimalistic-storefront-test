@@ -28,30 +28,33 @@ export const cartReducer = (state = initialState, action) => {
                 activeAttributes: [...selectedActiveAttrItems],
                 count: 1
             }
-
             const getNewCartProducts = () => {
-                let isDouble;
-                state.cartProducts.forEach(prod => {
-                    isDouble = prod.activeAttributes.every(item => {
-                        return selectedActiveAttrItems.find(selectedItem => {
-                            return selectedItem.id === item.id
+                let isDouble = state.cartProducts.find(prod => {
+                    if (prod.name === addedProduct.name) {
+                        return prod.activeAttributes.every(attr => {
+                            return selectedActiveAttrItems.find(activeAttr => {
+                                return attr.id === activeAttr.id
+                            })
                         })
-                    })
+                    }
+                    return false
                 })
 
                 if (state.cartProducts.length > 0 && isDouble) {
                     return state.cartProducts.map(prod => {
-                        const doubleProd = prod.activeAttributes.every(item => {
-                            return selectedActiveAttrItems.find(selectedItem => selectedItem.id === item.id)
-                        })
-                        if (doubleProd) {
-                            return {
-                                ...prod,
-                                count: prod.count + 1
+                        if (prod.name === addedProduct.name) {
+                            const doubleProd = prod.activeAttributes.every(attr => {
+                                return selectedActiveAttrItems.find(activeAttr => attr.id === activeAttr.id)
+                            })
+                            if (doubleProd) {
+                                return {
+                                    ...prod,
+                                    count: prod.count + 1
+                                }
                             }
-                        } else {
-                            return prod
                         }
+
+                        return prod
                     })
                 }
                 return [...state.cartProducts, addedProduct]
@@ -73,8 +76,15 @@ export const cartReducer = (state = initialState, action) => {
                 totalPrice
             }
         }
-        case 'DELETE_PRODUCT':
-            return state
+        case 'DELETE_PRODUCT': {
+            const newCartProducts = state.cartProducts.filter(prod => prod !== action.payload.product);
+            const totalPrice = getTotalPrice(newCartProducts, state)
+            return {
+                ...state,
+                cartProducts: newCartProducts,
+                totalPrice
+            }
+        }
         case 'INCREMENT': {
             const newCartProducts = state.cartProducts.map(prod => {
                 if (prod === action.payload.product) {
@@ -112,6 +122,23 @@ export const cartReducer = (state = initialState, action) => {
                 totalPrice
             }
         }
+        case 'CHANGE_ATTRIBUTE': {
+            const selectedProduct = action.payload.product;
+            const newCartProducts = state.cartProducts.map(prod => {
+                if (prod === selectedProduct) {
+                    return {
+                        ...prod,
+                        activeAttributes: [...action.payload.newActiveAttr]
+                    }
+                }
+                return prod
+            })
+
+            return {
+                ...state,
+                cartProducts: newCartProducts,
+            }
+        }
         default:
             return state
     }
@@ -122,4 +149,5 @@ export const increment = (product) => ({type: 'INCREMENT', payload: {product}});
 export const decrement = (product) => ({type: 'DECREMENT', payload: {product}});
 export const setCurrency = (currency) => ({type: 'SET_CURRENCY', payload: {currency}});
 export const addProduct = (product, activeAttrItems) => ({type: 'ADD_PRODUCT', payload: {product, activeAttrItems}});
-export const deleteProduct = (productName) => ({type: 'DELETE_PRODUCT', payload: {productName}});
+export const deleteProduct = (product) => ({type: 'DELETE_PRODUCT', payload: {product}});
+export const changeAttribute = (product, newActiveAttr) => ({type: 'CHANGE_ATTRIBUTE', payload: {product, newActiveAttr}});

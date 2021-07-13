@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from "styled-components";
 import {withRouter} from "react-router";
-import {Container, ProductPrice, ProductSubTitle, ProductTitle} from "../../components/Common";
+import {Container, ProductPrice, ProductTitle} from "../../components/Common";
 import {Button, ColorButton, SizeButton} from "../../components/Common/Buttons";
 
 const ProductContainer = styled.div`
@@ -142,7 +142,7 @@ class CardPage extends React.Component {
         const {currentProduct, activeImage, gallery, availableAttributes, activeAttributesItems} = this.state
         const attributes = availableAttributes.map((attr, index) => {
             const attrButtons = attr.items.map((attrItem, ind) => {
-                const isActiveButton = activeAttributesItems.some((item, i) => {
+                const isActiveButton = activeAttributesItems.every((item, i) => {
                     return item.id === attrItem.id
                 })
                 if (attr.type === 'swatch') {

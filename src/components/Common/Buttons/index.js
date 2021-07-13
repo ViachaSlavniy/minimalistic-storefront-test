@@ -37,6 +37,7 @@ export const SizeButton = styled.button`
 `;
 
 export const ColorButton = styled(SizeButton)`
+    width: 45px;
     border: ${props => props.active ? "4px solid #A6A6A6" : "1px solid #1D1F22"};
     background-color: ${props => props.color ? props.color : "#fff"};
     opacity: ${props => props.disabled ? "0.7" : 1};

@@ -60,7 +60,7 @@ const Figure = styled.figure`
     }
 `;
 const Figcaption = styled.figcaption`
-    margin-top: 15px;
+    margin-top: 10px;
     font-weight: 300;
     font-size: 18px;
     line-height: 28.8px;
@@ -76,8 +76,10 @@ const Price = styled.div`
 
 class CardItem extends React.Component {
 
-    addProduct = (prod) => {
-        // this.props.addProduct(prod)
+    addProduct = (e, product) => {
+        e.preventDefault();
+        const activeAttributes = product.attributes.map(attr => attr.items[0])
+        this.props.addProduct(product, activeAttributes)
     }
 
     render() {
@@ -99,7 +101,7 @@ class CardItem extends React.Component {
                         : ''
                     }
                 </Figure>
-                <div className='cart__button'>
+                <div onClick={(e) => this.addProduct(e, this.props)} className='cart__button'>
                     {Cart("#FFF")}
                 </div>
                 <Price disabled={this.props.disabled}>{priceSign}{price?.amount}</Price>
@@ -114,10 +116,10 @@ const mapStateToPros = (state) => {
     }
 }
 
-// const mapDispatchToProps = (dispatch) => {
-//     return {
-//         addProduct: (prod) => {dispatch(addProduct(prod))},
-//     }
-// }
+const mapDispatchToProps = (dispatch) => {
+    return {
+        addProduct: (prod, activeAttr) => {dispatch(addProduct(prod, activeAttr))},
+    }
+}
 
-export const Card = connect(mapStateToPros, {})(CardItem)
+export const Card = connect(mapStateToPros, mapDispatchToProps)(CardItem)

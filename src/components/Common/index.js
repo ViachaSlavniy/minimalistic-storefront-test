@@ -6,7 +6,6 @@ export const Container = styled.div`
 `;
 
 export const ProductTitle = styled.p`
-  margin-bottom: 16px;
   font-size: 30px;
   font-weight: 600;
   line-height: 27px;
