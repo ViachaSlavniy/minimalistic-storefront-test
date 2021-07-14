@@ -2,13 +2,13 @@ import React from 'react';
 import {MainWithRouter} from "./pages/MainPage/MainPage";
 import {Redirect, Route, Switch, withRouter} from "react-router";
 import {graphql} from "@apollo/client/react/hoc";
-import CartPageContainer from "./pages/CartPage/CartPageContainer";
-import CardPageContainer from "./pages/CardPage/CardPageContainer";
-import HeaderContainer from "./components/Header/HeaderContainer";
 import {GET_CATEGORIES_QUERY} from "./api/queries";
 import styled from "styled-components";
 import './App.css';
 import {compose} from "redux";
+import CartPage from "./pages/CartPage/CartPage";
+import CardPage from "./pages/CardPage/CardPage";
+import Header from "./components/Header/Header";
 
 const BlackContainer = styled.div`
   position: absolute;
@@ -25,9 +25,21 @@ const BlackContainer = styled.div`
 
 class App extends React.Component {
 
+    getCategories = (uniqueCategories) => {
+        let stack = ['all']
+        for (let cat of uniqueCategories) {
+            stack.push(cat);
+        }
+        return stack
+    }
+
     render() {
         const {loading, category} = this.props.data;
         const search = this.props.location?.search.substr(1);
+        const uniqueCategories = new Set(category?.products.map(product => {
+            return product.category
+        }))
+        const categories = this.getCategories(uniqueCategories)
         return (
             <div className="App">
                 {loading
@@ -35,13 +47,14 @@ class App extends React.Component {
                     : (
                         <>
                             <BlackContainer active={search === 'openMiniCart'}/>
-                            <HeaderContainer category={category}/>
+                            <Header categoriesName={categories} category={category}/>
                             <Switch>
                                 <Route path={`/card/:productName`}
-                                       render={() => <CardPageContainer category={category}/>}/>
-                                <Route path="/cart" render={() => <CartPageContainer/>}/>
-                                <Route path="/:category" render={() => <MainWithRouter category={category}/>}/>
-                                <Redirect from="/" to="/all"/>/>
+                                       render={() => <CardPage category={category}/>}/>
+                                <Route path="/cart" render={() => <CartPage/>}/>
+                                <Route path="/:category" render={() => <MainWithRouter categoriesName={categories}
+                                                                                       category={category}/>}/>
+                                <Redirect from="/*" to="/all"/>
                             </Switch>
                         </>
                     )

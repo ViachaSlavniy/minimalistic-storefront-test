@@ -10,11 +10,17 @@ export const Button = styled.button`
   color: ${props => props.green ? "#fff" : "#1D1F22"};
   border: ${props => props.green ? "none" : "1px solid #1D1F22"};
   
+  transition: all .2s linear;
+  
   font-family: Raleway;
   font-size: 16px;
   line-height: 17px;
   font-weight: 600;
   cursor: pointer;
+  
+  &:hover {
+    background-color: ${props => props.green && "#4faf6a"};
+  }
 `;
 
 export const SizeButton = styled.button`

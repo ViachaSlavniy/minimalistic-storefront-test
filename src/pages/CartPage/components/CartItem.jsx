@@ -63,6 +63,7 @@ const CartOrder = styled.div`
     transition: all .2s linear;
     
     span {
+      font-weight: 500;
       transition: all .2s linear;
       transform: rotate(-90deg);
     }
@@ -119,7 +120,7 @@ const OrderCounterBlock = styled.div`
       display: none;
       
       &:hover {
-        border-color: #5ECE7B;;
+        border-color: #5ECE7B;
       }
     }
 
@@ -171,10 +172,14 @@ export class CartItem extends Component {
     }
 
     setActiveAttribute = (e, attr, product) => {
-        const {attrIndex, itemIndex} = e.target.dataset
+        const {itemIndex, attrName} = e.target.dataset
         const newActiveAttributesItems = product.activeAttributes.map((item, index) => {
-            if (index === +attrIndex) {
-                return attr.items.find((_, ind) => ind === +itemIndex)
+            if (attrName === item.attributeName) {
+                const changedItem = attr.items.find((_, ind) => ind === +itemIndex)
+                return {
+                    ...changedItem,
+                    attributeName: attrName
+                }
             }
             return item
         })
@@ -188,14 +193,19 @@ export class CartItem extends Component {
         const attributes = product.attributes.map((attr, index) => {
             const attrButtons = attr.items.map((attrItem, ind) => {
                 const activeAttrItems = product.activeAttributes
-                const isActiveButton = activeAttrItems.find(item => item.id === attrItem.id)
+                const isActiveButton = activeAttrItems.find(item => {
+                    if (attr.name === item.attributeName) {
+                        return item.id === attrItem.id
+                    }
+                    return false
+                })
                 if (attr.type === 'swatch') {
                     return (
                         <ColorButton active={isActiveButton}
                                      color={attrItem.value}
                                      key={attrItem.id}
                                      data-item-index={ind}
-                                     data-attr-index={index}>
+                                     data-attr-name={attr.name}>
                         </ColorButton>
                     )
                 } else {
@@ -203,7 +213,7 @@ export class CartItem extends Component {
                         <SizeButton active={isActiveButton}
                                     key={attrItem.id}
                                     data-item-index={ind}
-                                    data-attr-index={index}>
+                                    data-attr-name={attr.name}>
                             {attrItem.displayValue}
                         </SizeButton>
                     )

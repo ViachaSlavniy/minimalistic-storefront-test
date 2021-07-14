@@ -123,9 +123,8 @@ export const cartReducer = (state = initialState, action) => {
             }
         }
         case 'CHANGE_ATTRIBUTE': {
-            const selectedProduct = action.payload.product;
             const newCartProducts = state.cartProducts.map(prod => {
-                if (prod === selectedProduct) {
+                if (prod === action.payload.product) {
                     return {
                         ...prod,
                         activeAttributes: [...action.payload.newActiveAttr]

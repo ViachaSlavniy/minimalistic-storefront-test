@@ -5,6 +5,10 @@ import {graphql} from "@apollo/client/react/hoc";
 import {Link} from "react-router-dom";
 import {GET_CURRENCIES} from "../../api/queries";
 import {Button, SmallButtonSize, SmallColorButton} from "../Common/Buttons";
+import {decrement, increment, setCurrency} from "../../redux/reducers/cartReducer";
+import {compose} from "redux";
+import {connect} from "react-redux";
+import {withRouter} from "react-router";
 
 const StyledHeader = styled.header`
   position: fixed;
@@ -151,7 +155,7 @@ const MiniCart = styled.div`
   max-height: calc(100vh - 80px);
   overflow-y: auto;
   background-color: #fff;
-  
+
 
   .minicart__title {
     font-weight: 700;
@@ -175,8 +179,11 @@ const MiniCart = styled.div`
       font-size: 14px;
       line-height: 16.8px;
     }
-
-    .right_btn {
+    .view_bag_btn:hover {
+      color: #fff;
+      background-color: #000;
+    }
+    .check_out_btn {
       margin-left: 12px;
     }
   }
@@ -208,7 +215,7 @@ const MiniCart = styled.div`
       margin-bottom: 40px;
       display: flex;
       justify-content: space-between;
-      
+
       .item__info {
         width: 125px;
 
@@ -222,15 +229,17 @@ const MiniCart = styled.div`
         .item__attributes_buttons {
           display: flex;
           flex-direction: column;
-          
+
           .attributes__block {
             display: flex;
             align-items: center;
             justify-content: space-between;
+
             .info_title {
               margin-right: 10px;
             }
           }
+
           .attributes__block + .attributes__block {
             margin-top: 10px;
           }
@@ -254,7 +263,7 @@ const MiniCart = styled.div`
           flex-direction: column;
           justify-content: space-between;
           align-items: center;
-          
+
           button {
             width: 24px;
           }
@@ -310,7 +319,8 @@ class Header extends React.Component {
                             return getCurrencyObj(curr, 'A$')
                         case 'JPY':
                             return getCurrencyObj(curr, '¥')
-                        default: return getCurrencyObj(curr, '$')
+                        default:
+                            return getCurrencyObj(curr, '$')
                     }
                 })
                 this.setState({availableCurrencies})
@@ -338,17 +348,13 @@ class Header extends React.Component {
         });
     }
 
-    getCategories = (uniqueCategories) => {
-        let stack = []
-        for (let cat of uniqueCategories) {
-            stack.push(cat);
-        }
-        return stack
+    checkOut = () => {
+        alert('Your order is accepted!')
     }
 
     render() {
         const currencies = this.state.availableCurrencies
-        const {cartProducts, currentCurrency, totalPrice, location} = this.props
+        const {cartProducts, currentCurrency, totalPrice, location, categoriesName} = this.props
         const activeNav = location.pathname.substr(1)
         const search = location.search.substr(1)
         const priceSign = currentCurrency.sign
@@ -357,7 +363,11 @@ class Header extends React.Component {
                 const attributes = product.attributes.map((attr, index) => {
                     const attrButtons = attr.items.map((attrItem, ind) => {
                         const activeAttrItems = product.activeAttributes
-                        const isActiveButton = activeAttrItems.find(item => item.id === attrItem.id)
+                        const isActiveButton = activeAttrItems.find(item => {
+                            if (attr.name === item.attributeName) {
+                                return item.id === attrItem.id
+                            }
+                        })
                         if (attr.type === 'swatch') {
                             if (isActiveButton) {
                                 return (
@@ -413,30 +423,14 @@ class Header extends React.Component {
                         </div>
                     </div>
                 )
-            }
-        )
-        const
-            uniqueCategories = new Set(this.props.category.products.map(product => {
-                return product.category
-            }))
-        const
-            categories = this.getCategories(uniqueCategories)
-
+            })
 
         return (
-
             <StyledHeader>
                 <div className="header__wrapper">
                     <Nav>
-                        <Link to={
-                            `/all`
-                        }
-
-                        >
-                            <NavItem active={activeNav === 'all'}>ALL</NavItem>
-                        </Link>
                         {
-                            categories.map(cat => {
+                            categoriesName.map(cat => {
                                 const firstLetter = cat[0].toUpperCase();
                                 const newName = firstLetter + cat.substr(1).toUpperCase()
                                 return (
@@ -498,9 +492,9 @@ class Header extends React.Component {
                                 </div>
                                 <div className="minicart__buttons">
                                     <Link to="/cart">
-                                        <Button>VIEW BAG</Button>
+                                        <Button className="view_bag_btn">VIEW BAG</Button>
                                     </Link>
-                                    <Button className="right_btn" green>CHECK OUT</Button>
+                                    <Button onClick={() => this.checkOut(cartProducts)} className="check_out_btn" green>CHECK OUT</Button>
                                 </div>
                             </MiniCart>
                         </div>
@@ -511,4 +505,29 @@ class Header extends React.Component {
     }
 }
 
-export default graphql(GET_CURRENCIES)(Header)
+const mapStateToProps = (state) => {
+    const {cartProducts, currentCurrency, totalPrice} = state.cart
+    return {
+        cartProducts,
+        currentCurrency,
+        totalPrice
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        setCurrency: (currency) => dispatch(setCurrency(currency)),
+        increment: (prod) => {
+            dispatch(increment(prod))
+        },
+        decrement: (prod) => {
+            dispatch(decrement(prod))
+        },
+    }
+}
+
+export default compose(
+    connect(mapStateToProps, mapDispatchToProps),
+    withRouter,
+    graphql(GET_CURRENCIES)
+)(Header)

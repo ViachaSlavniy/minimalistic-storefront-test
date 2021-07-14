@@ -3,7 +3,7 @@ import styled from "styled-components";
 import {Card} from "./components/Card/Card";
 import {Container} from "../../components/Common";
 import {NavLink} from "react-router-dom";
-import {withRouter} from "react-router";
+import {Redirect, withRouter} from "react-router";
 
 
 const Header = styled.h1`
@@ -23,10 +23,16 @@ const CardContainer = styled.div`
 
 class MainPage extends PureComponent {
 
+
+
     render() {
-        const {match} = this.props;
-        const category = match.params?.category || 'all'
+        const {match, categoriesName} = this.props;
+        const category = match.params?.category
         const {products} = this.props.category
+        const isAvailableCategory = categoriesName.some(cat => cat === category)
+        if (!isAvailableCategory) {
+            return <Redirect to="/"/>
+        }
         const categoryName = () => {
             const firstLetter = category[0].toUpperCase();
             return firstLetter + category.substr(1);

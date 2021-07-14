@@ -2,6 +2,8 @@ import React from 'react'
 import styled from "styled-components"
 import {Container} from "../../components/Common"
 import {CartItem} from "./components/CartItem";
+import {connect} from "react-redux";
+import {changeAttribute, decrement, deleteProduct, increment} from "../../redux/reducers/cartReducer";
 
 const CartTitle = styled.p`
   padding: 80px 0 60px 0;
@@ -10,11 +12,12 @@ const CartTitle = styled.p`
   line-height: 40px;
 `;
 const CartContainer = styled.div`
+  padding-bottom: 54px;
   max-width: 1100px;
 `;
 
 
-export class CartPage extends React.Component {
+class CartPage extends React.Component {
 
 
     render() {
@@ -43,3 +46,24 @@ export class CartPage extends React.Component {
         )
     }
 }
+
+
+const mapStateToProps = (state) => {
+    const {cartProducts, currentCurrency, totalPrice} = state.cart
+    return {
+        cartProducts,
+        currentCurrency,
+        totalPrice
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        increment: (prod) => {dispatch(increment(prod))},
+        decrement: (prod) => {dispatch(decrement(prod))},
+        deleteProduct: (prod) => {dispatch(deleteProduct(prod))},
+        changeAttribute: (prod, newActiveAttr) => {dispatch(changeAttribute(prod, newActiveAttr))}
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CartPage)

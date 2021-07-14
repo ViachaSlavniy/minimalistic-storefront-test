@@ -78,7 +78,12 @@ class CardItem extends React.Component {
 
     addProduct = (e, product) => {
         e.preventDefault();
-        const activeAttributes = product.attributes.map(attr => attr.items[0])
+        const activeAttributes = product.attributes.map(attr => {
+            return {
+                ...attr.items[0],
+                attributeName: attr.name
+            }
+        })
         this.props.addProduct(product, activeAttributes)
     }
 

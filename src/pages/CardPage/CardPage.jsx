@@ -3,6 +3,9 @@ import styled from "styled-components";
 import {withRouter} from "react-router";
 import {Container, ProductPrice, ProductTitle} from "../../components/Common";
 import {Button, ColorButton, SizeButton} from "../../components/Common/Buttons";
+import {addProduct, deleteProduct} from "../../redux/reducers/cartReducer";
+import {connect} from "react-redux";
+import {compose} from "redux";
 
 const ProductContainer = styled.div`
   display: flex;
@@ -47,7 +50,7 @@ const ProductInfo = styled.div`
   margin-left: 100px;
 
   .attributes__block {
-    margin: 43px 0 40px 0;
+    margin-top: 43px;
   }
   .attributes__buttons {
     display: flex;
@@ -66,7 +69,7 @@ const ProductInfo = styled.div`
   }
 
   .price__block {
-    margin-bottom: 20px;
+    margin: 40px 0 20px 0;
   }
 
   .product__about {
@@ -75,6 +78,14 @@ const ProductInfo = styled.div`
     font-weight: 400;
     font-size: 16px;
     line-height: 25.6px;
+    
+    h3 {
+      margin-top: 15px;
+    }
+    
+    p {
+      margin-top: 20px;
+    }
   }
 `;
 
@@ -102,7 +113,11 @@ class CardPage extends React.Component {
             )
         })
         const activeAttributesItems = currentProduct.attributes.map(attr => {
-                return attr.items.find((item, index) => index === 0 && item)
+            const activeAttr = attr.items.find((item, index) => index === 0 && item)
+                return {
+                    ...activeAttr,
+                    attributeName: attr.name
+                }
         })
         this.setState({
             activeAttributesItems,
@@ -121,10 +136,14 @@ class CardPage extends React.Component {
         }
     }
     setActiveAttribute = (e, attr) => {
-        const {attrIndex, itemIndex} = e.target.dataset
+        const {itemIndex, attrName} = e.target.dataset
         const newActiveAttributesItems = this.state.activeAttributesItems.map((item, index) => {
-            if (index === +attrIndex) {
-                return attr.items.find((_, ind) => ind === +itemIndex)
+            if (attrName === item.attributeName) {
+                const changedItem = attr.items.find((_, ind) => ind === +itemIndex)
+                return {
+                    ...changedItem,
+                    attributeName: attrName
+                }
             }
             return item
         })
@@ -142,24 +161,27 @@ class CardPage extends React.Component {
         const {currentProduct, activeImage, gallery, availableAttributes, activeAttributesItems} = this.state
         const attributes = availableAttributes.map((attr, index) => {
             const attrButtons = attr.items.map((attrItem, ind) => {
-                const isActiveButton = activeAttributesItems.every((item, i) => {
-                    return item.id === attrItem.id
+                const isActiveButton = activeAttributesItems.find((item, i) => {
+                    if (attr.name === item.attributeName) {
+                        return item.id === attrItem.id
+                    }
+                    return false
                 })
                 if (attr.type === 'swatch') {
                     return (
                         <ColorButton active={isActiveButton}
                                      color={attrItem.value}
                                      key={attrItem.id}
-                                     data-item-index={ind}
-                                     data-attr-index={index}>
+                                     data-attr-name={attr.name}
+                                     data-item-index={ind}>
                         </ColorButton>
                     )
                 } else {
                     return (
                         <SizeButton active={isActiveButton}
                                     key={attrItem.id}
-                                    data-item-index={ind}
-                                    data-attr-index={index}>
+                                    data-attr-name={attr.name}
+                                    data-item-index={ind}>
                             {attrItem.displayValue}
                         </SizeButton>
                     )
@@ -205,4 +227,21 @@ class CardPage extends React.Component {
     }
 }
 
-export const CardPageWithRouter = withRouter(CardPage)
+const mapStateToPros = (state) => {
+    return {
+        cartProducts: state.cart.cartProducts,
+        currentCurrency: state.cart.currentCurrency
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        addProduct: (product, activeAttributesItems) => {dispatch(addProduct(product, activeAttributesItems))},
+        deleteProduct: (productName) => {dispatch(deleteProduct(productName))}
+    }
+}
+
+export default compose(
+    withRouter,
+    connect(mapStateToPros, mapDispatchToProps)
+)(CardPage)
