@@ -23,3 +23,4 @@ export const ProductPrice = styled(ProductTitle)`
   font-size: 24px;
   line-height: 18px;
 `;
+

@@ -1,29 +1,12 @@
 import React, {PureComponent} from 'react'
-import styled from "styled-components";
 import {Card} from "./components/Card/Card";
-import {Container} from "../../components/Common";
+import {Container} from "../../components/StyledComponents/components/Common";
 import {NavLink} from "react-router-dom";
 import {Redirect, withRouter} from "react-router";
+import {CardContainer, Header} from "../../components/StyledComponents";
 
-
-const Header = styled.h1`
-  padding: 80px 0 103px;
-  font-weight: 400;
-`;
-const CardContainer = styled.div`
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    
-    a {
-      text-decoration: none;
-      cursor: auto;
-    }
-`;
 
 class MainPage extends PureComponent {
-
-
 
     render() {
         const {match, categoriesName} = this.props;
@@ -48,9 +31,11 @@ class MainPage extends PureComponent {
                     )
                 } else {
                     return (
-                        <Card key={String(ind)}
-                              disabled={!product.inStock}
-                              {...product}/>
+                        <NavLink key={String(ind)}
+                                 to={`/card/:${product.name}`}>
+                            <Card disabled={!product.inStock}
+                                  {...product}/>
+                        </NavLink>
                     )
                 }
             }

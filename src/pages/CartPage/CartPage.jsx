@@ -1,36 +1,26 @@
-import React from 'react'
-import styled from "styled-components"
-import {Container} from "../../components/Common"
+import React, {PureComponent} from 'react'
+import {Container} from "../../components/StyledComponents/components/Common"
 import {CartItem} from "./components/CartItem";
 import {connect} from "react-redux";
 import {changeAttribute, decrement, deleteProduct, increment} from "../../redux/reducers/cartReducer";
-
-const CartTitle = styled.p`
-  padding: 80px 0 60px 0;
-  font-weight: 700;
-  font-size: 32px;
-  line-height: 40px;
-`;
-const CartContainer = styled.div`
-  padding-bottom: 54px;
-  max-width: 1100px;
-`;
+import {CartContainer, CartTitle} from "../../components/StyledComponents";
 
 
-class CartPage extends React.Component {
+class CartPage extends PureComponent {
 
 
     render() {
         const {cartProducts, currentCurrency} = this.props
         const cartProductItems = cartProducts.map((product, i) => {
+            const {increment, decrement, deleteProduct, changeAttribute} = this.props
             return <CartItem key={String(i)}
                              product={product}
                              index={i}
                              currentCurrency={currentCurrency}
-                             increment={this.props.increment}
-                             decrement={this.props.decrement}
-                             deleteProduct={this.props.deleteProduct}
-                             changeAttribute={this.props.changeAttribute}
+                             increment={increment}
+                             decrement={decrement}
+                             deleteProduct={deleteProduct}
+                             changeAttribute={changeAttribute}
                     />
         })
         return (

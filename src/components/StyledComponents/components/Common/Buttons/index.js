@@ -9,14 +9,14 @@ export const Button = styled.button`
   background-color: ${props => props.green ? "#5ECE7B" : "#fff"};
   color: ${props => props.green ? "#fff" : "#1D1F22"};
   border: ${props => props.green ? "none" : "1px solid #1D1F22"};
-  
+  opacity: ${props => props.disabled && 0.5};
   transition: all .2s linear;
   
   font-family: Raleway;
   font-size: 16px;
   line-height: 17px;
   font-weight: 600;
-  cursor: pointer;
+  cursor: ${props => props.disabled ? 'auto' : 'pointer'};
   
   &:hover {
     background-color: ${props => props.green && "#4faf6a"};
